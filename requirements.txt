@@ -1,0 +1,7 @@
+.git
+.idea
+api_app
+emails
+db.sqlite3
+manage.py
+requirements.txt
