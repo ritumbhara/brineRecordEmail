@@ -1,5 +1,3 @@
-
-.idea
 api_app
 emails
 db.sqlite3
