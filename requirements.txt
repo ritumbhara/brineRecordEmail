@@ -1,4 +1,4 @@
-.git
+
 .idea
 api_app
 emails
