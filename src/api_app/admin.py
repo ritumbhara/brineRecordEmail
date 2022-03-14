@@ -1,4 +1,4 @@
 from django.contrib import admin
-from .models import EmailItem
+from .models import EmailDetail
 
-admin.site.register(EmailItem)
+admin.site.register(EmailDetail)
