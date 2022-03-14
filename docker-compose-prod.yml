@@ -1,0 +1,46 @@
+version: "3.7"
+
+services:
+  db:
+    image: postgres
+    ports:
+      - "${POSTGRES_DB_PORT}:${POSTGRES_DB_PORT}"
+    environment:
+      - POSTGRES_USER=${POSTGRES_DB_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_DB_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
+    volumes:
+      - database-data:/var/lib/postgresql/data
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "python manage.py migrate"
+    env_file: .env
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "python manage.py migrate && ddtrace-run gunicorn emails.wsgi:application --bind 0.0.0.0:8000 --timeout 90 -k gevent --workers 8 --log-level debug --capture-output"
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/usr/app
+    env_file: .env
+    depends_on:
+      - migrate
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+volumes:
+  database-data:
